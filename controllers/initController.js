@@ -6,9 +6,27 @@ class InitController extends EventEmitter {
     constructor() {
         super();
 
-        process.nextTick(() => {
-            this.connectToDB() && this.emit('start');
-        });
+        this.signUpEmail = process.env.SEED_EMAIL;
+        this.signUpPassword = process.env.SEED_PWD;
+
+        this.connectToDB() && this.signInUser();
+    }
+
+    async signInUser() {
+        try {
+            await this.AUTH.signInWithEmailAndPassword(this.signUpEmail, this.signUpPassword);
+            this.emit('start');
+        } catch(error) {
+            this.emit('end');
+        }
+    }
+
+    async signOutUser() {
+        try {
+            this.AUTH.currentUser && await this.AUTH.signOut();
+        } catch(error) {
+            console.error('Could not sign out'.red);
+        }
     }
 
     connectToDB() {
@@ -21,7 +39,10 @@ class InitController extends EventEmitter {
                 storageBucket: "<YOUR_KEY>",
                 messagingSenderId: "<YOUR_KEY>",
                 appId: "<YOUR_KEY>"
-            }).database();
+            });
+
+            this.DB = this.firebase.database();
+            this.AUTH = this.firebase.auth();
             console.log('Connected to Firebase :)'.green);
             return true;
         } catch(error) {

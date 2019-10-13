@@ -32,3 +32,11 @@ function error() {
 
 initController.on('start', start);
 initController.on('end', error);
+
+process.on('SIGINT', async () => {
+	await initController.signOutUser();
+});
+
+process.on('SIGTERM', async () => {
+	await initController.signOutUser();
+});
