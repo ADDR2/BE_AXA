@@ -1,3 +1,4 @@
+/* 3rd party libraries */
 const EventEmitter = require('events');
 const { initializeApp } = require('firebase');
 
@@ -30,4 +31,5 @@ class InitController extends EventEmitter {
     }
 }
 
-module.exports = new InitController();
+if (process.env.NODE_ENV === 'test') module.exports = InitController;
+else module.exports = new InitController();

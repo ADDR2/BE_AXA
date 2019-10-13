@@ -1,4 +1,6 @@
+/* Local libraries */
 require('./helpers/coloredStrings');
+const { FIREBASE_CONNCTION_ERROR } = require('./helpers/errorsCodes');
 const initController = require('./controllers/initController');
 
 function start() {
@@ -25,7 +27,7 @@ function start() {
 }
 
 function error() {
-	console.error('Something went wrong trying to connect :/'.red);
+	console.error(FIREBASE_CONNCTION_ERROR.message.red);
 }
 
 initController.on('start', start);
