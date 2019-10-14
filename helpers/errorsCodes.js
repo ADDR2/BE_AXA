@@ -23,5 +23,10 @@ module.exports = {
         message: 'Could not find client :/',
         code: 5,
         httpCode: 404
+    },
+    POLICIES_NOT_FOUND: {
+        message: 'Could not find any policies :/',
+        code: 6,
+        httpCode: 404
     }
 };

@@ -21,6 +21,7 @@ function start() {
 	/* Import routes */
 	const userRoutes = require('./routes/user');
 	const clientRoutes = require('./routes/client');
+	const policyRoutes = require('./routes/policy');
 
 	const PORT = process.env.PORT;
 
@@ -36,6 +37,7 @@ function start() {
 	/* Define routes */
 	app.use("/users", userRoutes);
 	app.use("/clients", clientRoutes);
+	app.use("/policies", policyRoutes);
 
 	app.listen(PORT, () => {
 		console.log(('Express server is up and running on port ' + PORT).green);
