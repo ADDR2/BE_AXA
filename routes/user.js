@@ -3,7 +3,7 @@ const router = require("express").Router();
 const passport = require('passport');
 
 /* Local libraries */
-const userController = require('../controllers/userController');
+const UserController = require('../controllers/userController');
 
 /*
     @param req: request object
@@ -17,7 +17,7 @@ const signUp = (req, res) => {
         if(typeof username !== 'string' || !username) throw new Error('Invalid username');
         if(typeof password !== 'string' || !password) throw new Error('Invalid password');
 
-        userController.signUp(username, password)
+        UserController.signUp(username, password)
             .then(token => {
                 res.status(201).send({ token });
             })
@@ -42,7 +42,7 @@ const logout = (req, res) => {
         const { user } = req;
         if(!user) throw new Error('Unable to authenticate user :/');
 
-        userController.logout(user.id)
+        UserController.logout(user.id)
             .then(() => {
                 res.status(200).send('Logged out :)');
             })
@@ -69,7 +69,7 @@ const login = (req, res) => {
         if(typeof username !== 'string' || !username) throw new Error('Invalid username');
         if(typeof password !== 'string' || !password) throw new Error('Invalid password');
 
-        userController.login(username, password)
+        UserController.login(username, password)
             .then(token => {
                 res.status(200).send({ token });
             })
