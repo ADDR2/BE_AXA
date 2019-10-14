@@ -18,5 +18,10 @@ module.exports = {
         message: 'Unauthorized action :/',
         code: 4,
         httpCode: 403
+    },
+    CLIENT_NOT_FOUND: {
+        message: 'Could not find client :/',
+        code: 5,
+        httpCode: 404
     }
 };
