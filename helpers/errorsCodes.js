@@ -8,5 +8,15 @@ module.exports = {
         message: 'Firebase error',
         code: 2,
         httpCode: 500
+    },
+    AUTHENTICATION_FAILURE: {
+        message: 'Cannot authenticate user :/',
+        code: 3,
+        httpCode: 401
+    },
+    AUTHORIZATION_FAILURE: {
+        message: 'Unauthorized action :/',
+        code: 4,
+        httpCode: 403
     }
 };
