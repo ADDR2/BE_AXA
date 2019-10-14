@@ -64,7 +64,7 @@ module.exports = {
         code: 13,
         httpCode: 403
     },
-    INVALID_REQUEST_BODY: {
+    INVALID_REQUEST_DATA: {
         message: 'Invalid data: ',
         code: 14,
         httpCode: 400

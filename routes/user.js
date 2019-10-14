@@ -5,7 +5,7 @@ const passport = require('passport');
 /* Local libraries */
 const HttpError = require('../helpers/httpError');
 const {
-    INVALID_REQUEST_BODY,
+    INVALID_REQUEST_DATA,
     AUTHENTICATION_FAILURE,
     LOGOUT_ERROR
 } = require('../helpers/errorsCodes');
@@ -21,12 +21,12 @@ const signUp = (req, res) => {
         const { username, password } = req.body;
 
         if(typeof username !== 'string' || !username) throw new HttpError({
-            ...INVALID_REQUEST_BODY,
-            message: INVALID_REQUEST_BODY.message + 'username'
+            ...INVALID_REQUEST_DATA,
+            message: INVALID_REQUEST_DATA.message + 'username'
         });
         if(typeof password !== 'string' || !password) throw new HttpError({
-            ...INVALID_REQUEST_BODY,
-            message: INVALID_REQUEST_BODY.message + 'password'
+            ...INVALID_REQUEST_DATA,
+            message: INVALID_REQUEST_DATA.message + 'password'
         });
 
         UserController.signUp(username, password)
@@ -41,7 +41,7 @@ const signUp = (req, res) => {
         if (error instanceof HttpError) {
             res.status(error.httpCode).send(error.message);
         } else {
-            res.status(INVALID_REQUEST_BODY.httpCode).send(INVALID_REQUEST_BODY.message);
+            res.status(INVALID_REQUEST_DATA.httpCode).send(INVALID_REQUEST_DATA.message);
         }
         process.env.NODE_ENV !== 'test' && console.error(error.message.red);
     }
@@ -85,12 +85,12 @@ const login = (req, res) => {
         const { username, password } = req.body;
 
         if(typeof username !== 'string' || !username) throw new HttpError({
-            ...INVALID_REQUEST_BODY,
-            message: INVALID_REQUEST_BODY.message + 'username'
+            ...INVALID_REQUEST_DATA,
+            message: INVALID_REQUEST_DATA.message + 'username'
         });
         if(typeof password !== 'string' || !password) throw new HttpError({
-            ...INVALID_REQUEST_BODY,
-            message: INVALID_REQUEST_BODY.message + 'password'
+            ...INVALID_REQUEST_DATA,
+            message: INVALID_REQUEST_DATA.message + 'password'
         });
 
         UserController.login(username, password)
@@ -105,7 +105,7 @@ const login = (req, res) => {
         if (error instanceof HttpError) {
             res.status(error.httpCode).send(error.message);
         } else {
-            res.status(INVALID_REQUEST_BODY.httpCode).send(INVALID_REQUEST_BODY.message);
+            res.status(INVALID_REQUEST_DATA.httpCode).send(INVALID_REQUEST_DATA.message);
         }
         process.env.NODE_ENV !== 'test' && console.error(error.message.red);
     }
