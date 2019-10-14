@@ -3,7 +3,17 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require('bcrypt');
 
 /* Local libraries */
-const { AUTHENTICATION_FAILURE } = require('../helpers/errorsCodes');
+const HttpError = require('../helpers/httpError');
+const {
+    AUTHENTICATION_FAILURE,
+    USER_NOT_FOUND,
+    INVALID_PASSWORD,
+    ERROR_AUTHENTICATING,
+    LOGOUT_ERROR,
+    SIGNED_UP,
+    ERROR_SIGNING_UP,
+    NOT_A_CLIENT
+} = require('../helpers/errorsCodes');
 const FirebaseDB = require('../services/firebaseDB');
 
 class UserController {
@@ -12,16 +22,16 @@ class UserController {
             return await FirebaseDB.getUserById(id);
         } catch(error) {
             console.error(error.message.red);
-            throw new Error(AUTHENTICATION_FAILURE.message);
+            throw new HttpError(AUTHENTICATION_FAILURE);
         }
     }
 
     static async login(username = '', password = '') {
         try {
-            const user = await FirebaseDB.getUserByUsername(username);
+            const user = await FirebaseDB.getUserByUsername(username).catch(() => {});
 
-            if (!user) throw new Error('User not found');
-            if(!await bcrypt.compare(password, user.password)) throw new Error('Password does not match');
+            if (!user) throw new HttpError(USER_NOT_FOUND);
+            if(!await bcrypt.compare(password, user.password)) throw new HttpError(INVALID_PASSWORD);
 
             const token = jwt.sign(
                 { id: user.id },
@@ -34,23 +44,32 @@ class UserController {
             return token;
         } catch(error) {
             console.error(error.message.red);
-            throw new Error('Unable to login user :/');
+            if (error instanceof HttpError) {
+                throw error;
+            } else {
+                throw new HttpError(ERROR_AUTHENTICATING);
+            }
         }
     }
 
     static async signUp(username = '', password = '') {
         try {
             const user = await FirebaseDB.getUserByUsername(username).catch(() => {});
+            if (user) throw new HttpError(SIGNED_UP);
 
-            if (user) throw new Error('User already signed up');
+            const client = await FirebaseDB.getClientByUsername(username).catch(() => {});
+            if (!client) throw new HttpError(NOT_A_CLIENT);
 
-            const client = await FirebaseDB.getClientByUsername(username);
             await FirebaseDB.createUser(client, await bcrypt.hash(password, 10));
 
             return await UserController.login(username, password);
         } catch(error) {
             console.error(error.message.red);
-            throw new Error('Unable to sign up user :/');
+            if (error instanceof HttpError) {
+                throw error;
+            } else {
+                throw new HttpError(ERROR_SIGNING_UP);
+            }
         }
     }
 
@@ -59,7 +78,7 @@ class UserController {
             await FirebaseDB.removeTokenToUser(userId);
         } catch(error) {
             console.error(error.message.red);
-            throw new Error('Unable to logout user :/');
+            throw new HttpError(LOGOUT_ERROR);
         }
     }
 }
