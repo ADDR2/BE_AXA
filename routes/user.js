@@ -3,6 +3,12 @@ const router = require("express").Router();
 const passport = require('passport');
 
 /* Local libraries */
+const HttpError = require('../helpers/httpError');
+const {
+    INVALID_REQUEST_BODY,
+    AUTHENTICATION_FAILURE,
+    LOGOUT_ERROR
+} = require('../helpers/errorsCodes');
 const UserController = require('../controllers/userController');
 
 /*
@@ -14,20 +20,29 @@ const signUp = (req, res) => {
     try {
         const { username, password } = req.body;
 
-        if(typeof username !== 'string' || !username) throw new Error('Invalid username');
-        if(typeof password !== 'string' || !password) throw new Error('Invalid password');
+        if(typeof username !== 'string' || !username) throw new HttpError({
+            ...INVALID_REQUEST_BODY,
+            message: INVALID_REQUEST_BODY.message + 'username'
+        });
+        if(typeof password !== 'string' || !password) throw new HttpError({
+            ...INVALID_REQUEST_BODY,
+            message: INVALID_REQUEST_BODY.message + 'password'
+        });
 
         UserController.signUp(username, password)
             .then(token => {
                 res.status(201).send({ token });
             })
             .catch(error => {
-                console.error(error.message.red);
-                res.status(500).send(error.message);
+                res.status(error.httpCode).send(error.message);
             })
         ;
     } catch (error) {
-        res.status(400).send(error.message);
+        if (error instanceof HttpError) {
+            res.status(error.httpCode).send(error.message);
+        } else {
+            res.status(INVALID_REQUEST_BODY.httpCode).send(INVALID_REQUEST_BODY.message);
+        }
         process.env.NODE_ENV !== 'test' && console.error(error.message.red);
     }
 };
@@ -40,19 +55,22 @@ const signUp = (req, res) => {
 const logout = (req, res) => {
     try {
         const { user } = req;
-        if(!user) throw new Error('Unable to authenticate user :/');
+        if(!user) throw new HttpError(AUTHENTICATION_FAILURE);
 
         UserController.logout(user.id)
             .then(() => {
                 res.status(200).send('Logged out :)');
             })
             .catch(error => {
-                console.error(error.message.red);
-                res.status(500).send(error.message);
+                res.status(error.httpCode).send(error.message);
             })
         ;
     } catch (error) {
-        res.status(400).send(error.message);
+        if (error instanceof HttpError) {
+            res.status(error.httpCode).send(error.message);
+        } else {
+            res.status(LOGOUT_ERROR.httpCode).send(LOGOUT_ERROR.message);
+        }
         process.env.NODE_ENV !== 'test' && console.error(error.message.red);
     }
 };
@@ -66,20 +84,29 @@ const login = (req, res) => {
     try {
         const { username, password } = req.body;
 
-        if(typeof username !== 'string' || !username) throw new Error('Invalid username');
-        if(typeof password !== 'string' || !password) throw new Error('Invalid password');
+        if(typeof username !== 'string' || !username) throw new HttpError({
+            ...INVALID_REQUEST_BODY,
+            message: INVALID_REQUEST_BODY.message + 'username'
+        });
+        if(typeof password !== 'string' || !password) throw new HttpError({
+            ...INVALID_REQUEST_BODY,
+            message: INVALID_REQUEST_BODY.message + 'password'
+        });
 
         UserController.login(username, password)
             .then(token => {
                 res.status(200).send({ token });
             })
             .catch(error => {
-                console.error(error.message.red);
-                res.status(500).send(error.message);
+                res.status(error.httpCode).send(error.message);
             })
         ;
     } catch (error) {
-        res.status(400).send(error.message);
+        if (error instanceof HttpError) {
+            res.status(error.httpCode).send(error.message);
+        } else {
+            res.status(INVALID_REQUEST_BODY.httpCode).send(INVALID_REQUEST_BODY.message);
+        }
         process.env.NODE_ENV !== 'test' && console.error(error.message.red);
     }
 };

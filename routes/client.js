@@ -14,7 +14,7 @@ const getClientById = (req, res) => {
     try {
         const { user } = req;
         if (!user) throw new Error('Unable to authenticate user :/');
-        if (user.role !== 'users' && user.role !== 'admin') throw new Error('Unathorized user :/');
+        if (user.role !== 'user' && user.role !== 'admin') throw new Error('Unathorized user :/');
 
         const { clientId } = req.params;
 
@@ -25,7 +25,6 @@ const getClientById = (req, res) => {
                 res.status(200).send(client);
             })
             .catch(error => {
-                console.error(error.message.red);
                 res.status(error.httpCode).send(error.message);
             })
         ;
@@ -44,7 +43,7 @@ const getClientByName = (req, res) => {
     try {
         const { user } = req;
         if (!user) throw new Error('Unable to authenticate user :/');
-        if (user.role !== 'users' && user.role !== 'admin') throw new Error('Unathorized user :/');
+        if (user.role !== 'user' && user.role !== 'admin') throw new Error('Unathorized user :/');
 
         const { clientName } = req.params;
 
@@ -55,7 +54,6 @@ const getClientByName = (req, res) => {
                 res.status(200).send(client);
             })
             .catch(error => {
-                console.error(error.message.red);
                 res.status(error.httpCode).send(error.message);
             })
         ;

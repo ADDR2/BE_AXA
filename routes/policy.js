@@ -25,7 +25,6 @@ const getClientByPolicyId = (req, res) => {
                 res.status(200).send(client);
             })
             .catch(error => {
-                console.error(error.message.red);
                 res.status(error.httpCode).send(error.message);
             })
         ;
@@ -55,7 +54,6 @@ const getPoliciesByClientName = (req, res) => {
                 res.status(200).send(policies);
             })
             .catch(error => {
-                console.error(error.message.red);
                 res.status(error.httpCode).send(error.message);
             })
         ;
