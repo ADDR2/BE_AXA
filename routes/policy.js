@@ -3,6 +3,12 @@ const router = require("express").Router();
 const passport = require('passport');
 
 /* Local libraries */
+const HttpError = require('../helpers/httpError');
+const {
+    INVALID_REQUEST_DATA,
+    AUTHENTICATION_FAILURE,
+    AUTHORIZATION_FAILURE
+} = require('../helpers/errorsCodes');
 const PolicyController = require('../controllers/policyController');
 
 /*
@@ -13,12 +19,15 @@ const PolicyController = require('../controllers/policyController');
 const getClientByPolicyId = (req, res) => {
     try {
         const { user } = req;
-        if (!user) throw new Error('Unable to authenticate user :/');
-        if (user.role !== 'admin') throw new Error('Unathorized user :/');
+        if (!user) throw new HttpError(AUTHENTICATION_FAILURE);
+        if (user.role !== 'admin') throw new HttpError(AUTHORIZATION_FAILURE);
 
         const { policyId } = req.params;
 
-        if(typeof policyId !== 'string' || !policyId) throw new Error('Invalid policy id');
+        if(typeof policyId !== 'string' || !policyId) throw new HttpError({
+            ...INVALID_REQUEST_DATA,
+            message: INVALID_REQUEST_DATA.message + 'policy id'
+        });
 
         PolicyController.getClientByPolicyId(policyId)
             .then(client => {
@@ -29,7 +38,11 @@ const getClientByPolicyId = (req, res) => {
             })
         ;
     } catch (error) {
-        res.status(400).send(error.message);
+        if (error instanceof HttpError) {
+            res.status(error.httpCode).send(error.message);
+        } else {
+            res.status(INVALID_REQUEST_DATA.httpCode).send(INVALID_REQUEST_DATA.message);
+        }
         process.env.NODE_ENV !== 'test' && console.error(error.message.red);
     }
 };
@@ -42,12 +55,15 @@ const getClientByPolicyId = (req, res) => {
 const getPoliciesByClientName = (req, res) => {
     try {
         const { user } = req;
-        if (!user) throw new Error('Unable to authenticate user :/');
-        if (user.role !== 'admin') throw new Error('Unathorized user :/');
+        if (!user) throw new HttpError(AUTHENTICATION_FAILURE);
+        if (user.role !== 'admin') throw new HttpError(AUTHORIZATION_FAILURE);
 
         const { clientName } = req.params;
 
-        if(typeof clientName !== 'string' || !clientName) throw new Error('Invalid client name');
+        if(typeof clientName !== 'string' || !clientName) throw new HttpError({
+            ...INVALID_REQUEST_DATA,
+            message: INVALID_REQUEST_DATA.message + 'client name'
+        });
 
         PolicyController.getPoliciesByClientName(clientName)
             .then(policies => {
@@ -58,7 +74,11 @@ const getPoliciesByClientName = (req, res) => {
             })
         ;
     } catch (error) {
-        res.status(400).send(error.message);
+        if (error instanceof HttpError) {
+            res.status(error.httpCode).send(error.message);
+        } else {
+            res.status(INVALID_REQUEST_DATA.httpCode).send(INVALID_REQUEST_DATA.message);
+        }
         process.env.NODE_ENV !== 'test' && console.error(error.message.red);
     }
 };
