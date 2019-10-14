@@ -1,16 +1,17 @@
 /* 3rd party libraries */
+require('dotenv').config({ path: `./config/.env.${process.env.NODE_ENV}` });
 const { get } = require('axios');
 /* Local libraries */
 require('./helpers/coloredStrings');
-const initController = require('./controllers/initController');
+const InitController = require('./controllers/initController');
 const { FIREBASE_CONNCTION_ERROR, FIREBASE_OPERATION_ERROR } = require('./helpers/errorsCodes');
 
 class Seed {
     constructor() {
-        this.clientsURL = process.env.CLIENTS_URL || 'http://www.mocky.io/V2/5808862710000087232b75ac';
-        this.policiesURL = process.env.POLICIES_URL || 'http://www.mocky.io/v2/580891a4100000e8242b75c5';
+        this.clientsURL = process.env.CLIENTS_URL;
+        this.policiesURL = process.env.POLICIES_URL;
 
-        initController.on('start', async () => {
+        InitController.on('start', async () => {
             try {
                 await this.dropUsers();
                 await this.dropPolicies();
@@ -19,7 +20,7 @@ class Seed {
                 await this.populateClients();
                 await this.populatePolicies();
 
-                await initController.signOutUser();
+                await InitController.signOutUser();
 
                 console.log('Seed successfully executed :)'.green);
                 process.exit(0);
@@ -28,7 +29,7 @@ class Seed {
             }
         });
 
-        initController.on(
+        InitController.on(
             'end',
             () => console.error(FIREBASE_CONNCTION_ERROR.message.red)
         );
@@ -57,7 +58,7 @@ class Seed {
         console.log('Populating clients...'.cyan);
         try {
             const { data: { clients } } = await get(this.clientsURL);
-            await initController.DB.ref('/clients/').set(
+            await InitController.DB.ref('/clients/').set(
                 this.convertArrayDataIntoObject(clients)
             );
 
@@ -71,7 +72,7 @@ class Seed {
         console.log('Populating policies...'.cyan);
         try {
             const { data: { policies } } = await get(this.policiesURL);
-            await initController.DB.ref('/policies/').set(
+            await InitController.DB.ref('/policies/').set(
                 this.convertArrayDataIntoObject(policies)
             );
 
@@ -84,7 +85,7 @@ class Seed {
     async dropClients() {
         console.log('Dropping clients...'.cyan);
         try {
-            await initController.DB.ref('/clients/').remove();
+            await InitController.DB.ref('/clients/').remove();
             console.log('Clients successfully dropped'.green);
         } catch(error) {
             this.handleError('dropping clients', error);
@@ -94,7 +95,7 @@ class Seed {
     async dropPolicies() {
         console.log('Dropping policies...'.cyan);
         try {
-            await initController.DB.ref('/policies/').remove();
+            await InitController.DB.ref('/policies/').remove();
             console.log('Policies successfully dropped'.green);
         } catch(error) {
             this.handleError('dropping policies', error);
@@ -104,7 +105,7 @@ class Seed {
     async dropUsers() {
         console.log('Dropping users...'.cyan);
         try {
-            await initController.DB.ref('/users/').remove();
+            await InitController.DB.ref('/users/').remove();
             console.log('Users successfully dropped'.green);
         } catch(error) {
             this.handleError('dropping users', error);
