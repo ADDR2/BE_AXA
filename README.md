@@ -80,7 +80,7 @@ body: {
 
 ```
 method: POST
-url: "http://localhost:YOUR_PORT/users/"
+url: "http://localhost:YOUR_PORT/users/logout"
 required headers: {
 	Authorization: 'Bearer YOUR_TOKEN'
 }

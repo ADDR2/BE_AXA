@@ -139,7 +139,7 @@ router.post("/signup", signUp);
 Route of logout service
 Example of use:
     method: POST
-    url: "http://localhost:3000/users/"
+    url: "http://localhost:3000/users/logout"
 */
 router.post("/logout", passport.authenticate('jwt', { session: false }), logout);
 
