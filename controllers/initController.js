@@ -9,7 +9,9 @@ class InitController extends EventEmitter {
         this.signUpEmail = process.env.SEED_EMAIL;
         this.signUpPassword = process.env.SEED_PWD;
 
-        this.connectToDB() && this.signInUser();
+        process.nextTick(() => {
+            this.connectToDB() && this.signInUser();
+        });
     }
 
     async signInUser() {

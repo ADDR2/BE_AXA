@@ -48,6 +48,7 @@ function start() {
 
 function error() {
 	console.error(FIREBASE_CONNCTION_ERROR.message.red);
+	process.exit(1);
 }
 
 InitController.on('start', start);
