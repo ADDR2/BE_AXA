@@ -1,22 +1,25 @@
 /* 3rd party libraries */
-const router = require("express").Router();
-const passport = require('passport');
+import express, { Response } from "express";
+import passport from 'passport';
 
 /* Local libraries */
-const HttpError = require('../helpers/httpError');
-const {
+import HttpError from '../helpers/httpError';
+import {
     INVALID_REQUEST_DATA,
     AUTHENTICATION_FAILURE,
     AUTHORIZATION_FAILURE
-} = require('../helpers/errorsCodes');
-const ClientController = require('../controllers/clientController');
+} from '../helpers/errorsCodes';
+import ClientController from '../controllers/clientController';
+import RequestWithAuthenticatedUser from '../models/RequestWithAuthenticatedUser';
+import ColoredString from '../helpers/coloredStrings';
+const router = express.Router();
 
 /*
     @param req: request object
     @param res: response object
     function getClientById: service that returns a client filtered by Id
 */
-const getClientById = (req, res) => {
+const getClientById = (req: RequestWithAuthenticatedUser, res: Response) => {
     try {
         const { user } = req;
         if (!user) throw new HttpError(AUTHENTICATION_FAILURE);
@@ -43,7 +46,7 @@ const getClientById = (req, res) => {
         } else {
             res.status(INVALID_REQUEST_DATA.httpCode).send(INVALID_REQUEST_DATA.message);
         }
-        process.env.NODE_ENV !== 'test' && console.error(error.message.red);
+        process.env.NODE_ENV !== 'test' && console.error(new ColoredString(error.message).red());
     }
 };
 
@@ -52,7 +55,7 @@ const getClientById = (req, res) => {
     @param res: response object
     function getClientByName: service that returns a client filtered by name
 */
-const getClientByName = (req, res) => {
+const getClientByName = (req: RequestWithAuthenticatedUser, res: Response) => {
     try {
         const { user } = req;
         if (!user) throw new HttpError(AUTHENTICATION_FAILURE);
@@ -79,7 +82,7 @@ const getClientByName = (req, res) => {
         } else {
             res.status(INVALID_REQUEST_DATA.httpCode).send(INVALID_REQUEST_DATA.message);
         }
-        process.env.NODE_ENV !== 'test' && console.error(error.message.red);
+        process.env.NODE_ENV !== 'test' && console.error(new ColoredString(error.message).red());
     }
 };
 
@@ -99,9 +102,4 @@ Example of use:
 */
 router.get("/:clientId", passport.authenticate('jwt', { session: false }), getClientById);
 
-if(process.env.NODE_ENV === 'test')
-    module.exports = {
-        getClientById,
-        getClientByName
-    };
-else module.exports = router;
+export default router;

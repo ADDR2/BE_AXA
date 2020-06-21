@@ -1,13 +1,19 @@
 /* 3rd party libraries */
-const EventEmitter = require('events');
-const { initializeApp } = require('firebase');
+import { EventEmitter } from 'events';
+import { initializeApp } from 'firebase';
+
+/* Local libraries */
+import ColoredString from '../helpers/coloredStrings';
 
 class InitController extends EventEmitter {
+    signUpEmail = process.env.SEED_EMAIL;
+    signUpPassword = process.env.SEED_PWD;
+    firebase: firebase.app.App;
+    DB: firebase.database.Database;
+    AUTH: firebase.auth.Auth;
+
     constructor() {
         super();
-
-        this.signUpEmail = process.env.SEED_EMAIL;
-        this.signUpPassword = process.env.SEED_PWD;
 
         process.nextTick(() => {
             this.connectToDB() && this.signInUser();
@@ -27,11 +33,11 @@ class InitController extends EventEmitter {
         try {
             this.AUTH.currentUser && await this.AUTH.signOut();
         } catch(error) {
-            console.error('Could not sign out'.red);
+            console.error(new ColoredString('Could not sign out').red());
         }
     }
 
-    connectToDB() {
+    connectToDB(): boolean {
         try {
             this.firebase = initializeApp({
                 apiKey: process.env.FIREBASE_API_KEY,
@@ -45,7 +51,7 @@ class InitController extends EventEmitter {
 
             this.DB = this.firebase.database();
             this.AUTH = this.firebase.auth();
-            console.log('Connected to Firebase :)'.green);
+            console.log(new ColoredString('Connected to Firebase :)').green());
             return true;
         } catch(error) {
             this.emit('end');
@@ -54,5 +60,4 @@ class InitController extends EventEmitter {
     }
 }
 
-if (process.env.NODE_ENV === 'test') module.exports = InitController;
-else module.exports = new InitController();
+export default new InitController();

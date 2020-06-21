@@ -1,27 +1,26 @@
 /* 3rd party libraries */
 require('dotenv').config({ path: `./config/.env.${process.env.NODE_ENV}` });
+import passport from 'passport';
+import morgan from 'morgan';
+import express from "express";
+import bodyParser from "body-parser";
+
+/* Import middlewares */
+import authentication from './middlewares/authentication';
+
+/* Import routes */
+import userRoutes from './routes/user';
+import clientRoutes from './routes/client';
+import policyRoutes from './routes/policy';
 
 /* Local libraries */
-require('./helpers/coloredStrings');
-const { FIREBASE_CONNCTION_ERROR } = require('./helpers/errorsCodes');
-const InitController = require('./controllers/initController');
+import ColoredString from './helpers/coloredStrings';
+import { FIREBASE_CONNCTION_ERROR } from './helpers/errorsCodes';
+import InitController from './controllers/initController';
 
 function start() {
-	console.log('Server will start running soon :)'.cyan);
-	/* 3rd party libraries */
-	const passport = require('passport');
-	const morgan = require('morgan');
-	const express = require("express");
-	const bodyParser = require("body-parser");
+	console.log(new ColoredString('Server will start running soon :)').cyan());
 	const app = express();
-
-	/* Import middlewares */
-	const authentication = require('./middlewares/authentication');
-
-	/* Import routes */
-	const userRoutes = require('./routes/user');
-	const clientRoutes = require('./routes/client');
-	const policyRoutes = require('./routes/policy');
 
 	const PORT = process.env.PORT;
 
@@ -40,14 +39,14 @@ function start() {
 	app.use("/policies", policyRoutes);
 
 	app.listen(PORT, () => {
-		console.log(('Express server is up and running on port ' + PORT).green);
+		console.log(new ColoredString('Express server is up and running on port ' + PORT).green());
 	});
 
 	return app;
 }
 
 function error() {
-	console.error(FIREBASE_CONNCTION_ERROR.message.red);
+	console.error(new ColoredString(FIREBASE_CONNCTION_ERROR.message).red());
 	process.exit(1);
 }
 

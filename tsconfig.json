@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "esModuleInterop": true,
+        "target": "ES2017",
+        "watch": false,
+        "lib": [ "es2020", "dom" ],
+        "types": [ "node" ],
+        "outDir": "dist",
+        "baseUrl": ".",
+        "moduleResolution": "node",
+        "paths": {
+            "*": [
+                "node_modules/*",
+                "src/types/*"
+            ]
+        }
+    },
+    "include": [
+        "src/**/*"
+    ]
+}

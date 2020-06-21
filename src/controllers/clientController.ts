@@ -1,14 +1,15 @@
 /* Local libraries */
-const HttpError = require('../helpers/httpError');
-const { CLIENT_NOT_FOUND } = require('../helpers/errorsCodes');
-const FirebaseDB = require('../services/firebaseDB');
+import HttpError from '../helpers/httpError';
+import { CLIENT_NOT_FOUND } from '../helpers/errorsCodes';
+import FirebaseDB from '../services/firebaseDB';
+import ColoredString from '../helpers/coloredStrings';
 
 class ClientController {
     static async getClientById(clientId = '') {
         try {
             return await FirebaseDB.getClientById(clientId);
         } catch(error) {
-            console.error(error.message.red);
+            console.error(new ColoredString(error.message).red());
             throw new HttpError(CLIENT_NOT_FOUND);
         }
     }
@@ -17,10 +18,10 @@ class ClientController {
         try {
             return await FirebaseDB.getClientByName(clientName);
         } catch(error) {
-            console.error(error.message.red);
+            console.error(new ColoredString(error.message).red());
             throw new HttpError(CLIENT_NOT_FOUND);
         }
     }
 }
 
-module.exports = ClientController;
+export default ClientController;

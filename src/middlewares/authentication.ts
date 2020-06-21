@@ -1,15 +1,15 @@
 /* 3rd party libraries */
-const { ExtractJwt, Strategy } = require('passport-jwt');
+import { ExtractJwt, Strategy } from 'passport-jwt';
 
 /* Local libraries */
-const UserController = require('../controllers/userController');
+import UserController from '../controllers/userController';
 
 const options = {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     secretOrKey: process.env.SECRET,
 };
 
-module.exports = new Strategy(options, function({ id }, done) {
+export default new Strategy(options, function({ id }, done) {
     UserController.getUserById(id)
         .then(user => {
             user.token && done(null, { ...user, id });

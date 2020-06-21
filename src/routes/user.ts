@@ -1,22 +1,25 @@
 /* 3rd party libraries */
-const router = require("express").Router();
-const passport = require('passport');
+import express, { Request, Response } from "express";
+import passport from 'passport';
 
 /* Local libraries */
-const HttpError = require('../helpers/httpError');
-const {
+import HttpError from '../helpers/httpError';
+import {
     INVALID_REQUEST_DATA,
     AUTHENTICATION_FAILURE,
     LOGOUT_ERROR
-} = require('../helpers/errorsCodes');
-const UserController = require('../controllers/userController');
+} from '../helpers/errorsCodes';
+import UserController from '../controllers/userController';
+import RequestWithAuthenticatedUser from '../models/RequestWithAuthenticatedUser';
+import ColoredString from '../helpers/coloredStrings';
+const router = express.Router();
 
 /*
     @param req: request object
     @param res: response object
     function signUp: service that registers a user and returns a token
 */
-const signUp = (req, res) => {
+const signUp = (req: Request, res: Response) => {
     try {
         const { username, password } = req.body;
 
@@ -43,7 +46,7 @@ const signUp = (req, res) => {
         } else {
             res.status(INVALID_REQUEST_DATA.httpCode).send(INVALID_REQUEST_DATA.message);
         }
-        process.env.NODE_ENV !== 'test' && console.error(error.message.red);
+        process.env.NODE_ENV !== 'test' && console.error(new ColoredString(error.message).red());
     }
 };
 
@@ -52,7 +55,7 @@ const signUp = (req, res) => {
     @param res: response object
     function logout: service that logs out the user
 */
-const logout = (req, res) => {
+const logout = (req: RequestWithAuthenticatedUser, res: Response) => {
     try {
         const { user } = req;
         if(!user) throw new HttpError(AUTHENTICATION_FAILURE);
@@ -71,7 +74,7 @@ const logout = (req, res) => {
         } else {
             res.status(LOGOUT_ERROR.httpCode).send(LOGOUT_ERROR.message);
         }
-        process.env.NODE_ENV !== 'test' && console.error(error.message.red);
+        process.env.NODE_ENV !== 'test' && console.error(new ColoredString(error.message).red());
     }
 };
 
@@ -80,7 +83,7 @@ const logout = (req, res) => {
     @param res: response object
     function login: service that authenticates a user
 */
-const login = (req, res) => {
+const login = (req: Request, res: Response) => {
     try {
         const { username, password } = req.body;
 
@@ -107,7 +110,7 @@ const login = (req, res) => {
         } else {
             res.status(INVALID_REQUEST_DATA.httpCode).send(INVALID_REQUEST_DATA.message);
         }
-        process.env.NODE_ENV !== 'test' && console.error(error.message.red);
+        process.env.NODE_ENV !== 'test' && console.error(new ColoredString(error.message).red());
     }
 };
 
@@ -143,10 +146,4 @@ Example of use:
 */
 router.post("/logout", passport.authenticate('jwt', { session: false }), logout);
 
-if(process.env.NODE_ENV === 'test')
-    module.exports = {
-        login,
-        logout,
-        signUp
-    };
-else module.exports = router;
+export default router;

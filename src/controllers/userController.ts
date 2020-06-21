@@ -1,10 +1,10 @@
 /* 3rd party libraries */
-const jwt = require("jsonwebtoken");
-const bcrypt = require('bcrypt');
+import jwt from "jsonwebtoken";
+import bcrypt from 'bcrypt';
 
 /* Local libraries */
-const HttpError = require('../helpers/httpError');
-const {
+import HttpError from '../helpers/httpError';
+import {
     AUTHENTICATION_FAILURE,
     USER_NOT_FOUND,
     INVALID_PASSWORD,
@@ -13,15 +13,16 @@ const {
     SIGNED_UP,
     ERROR_SIGNING_UP,
     NOT_A_CLIENT
-} = require('../helpers/errorsCodes');
-const FirebaseDB = require('../services/firebaseDB');
+} from '../helpers/errorsCodes';
+import FirebaseDB from '../services/firebaseDB';
+import ColoredString from '../helpers/coloredStrings';
 
 class UserController {
     static async getUserById(id = '') {
         try {
             return await FirebaseDB.getUserById(id);
         } catch(error) {
-            console.error(error.message.red);
+            console.error(new ColoredString(error.message).red());
             throw new HttpError(AUTHENTICATION_FAILURE);
         }
     }
@@ -43,7 +44,7 @@ class UserController {
 
             return token;
         } catch(error) {
-            console.error(error.message.red);
+            console.error(new ColoredString(error.message).red());
             if (error instanceof HttpError) {
                 throw error;
             } else {
@@ -64,7 +65,7 @@ class UserController {
 
             return await UserController.login(username, password);
         } catch(error) {
-            console.error(error.message.red);
+            console.error(new ColoredString(error.message).red());
             if (error instanceof HttpError) {
                 throw error;
             } else {
@@ -77,10 +78,10 @@ class UserController {
         try {
             await FirebaseDB.removeTokenToUser(userId);
         } catch(error) {
-            console.error(error.message.red);
+            console.error(new ColoredString(error.message).red());
             throw new HttpError(LOGOUT_ERROR);
         }
     }
 }
 
-module.exports = UserController;
+export default UserController;
